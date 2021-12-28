@@ -18,7 +18,7 @@ python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data
 
 **Base Arguments**
 
-`--ckpoint`: str, default = "./ckpoint". checkpoint will be saved here.
+`--ckpoint`: str, default = "./ckpoint". checkpoint will be saved here. If it is not .pt file, the latest checkpoint will be loaded.
 
 `--latent_dim`: int, default = 128.
 
