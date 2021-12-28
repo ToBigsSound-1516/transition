@@ -12,9 +12,9 @@ from util import midi_to_array
 def download_data(data_path):
     print("Downloading data in the", data_path)
     os.makedirs(data_path, exist_ok = True)
-    gdown.download("https://drive.google.com/uc?id=1yz0Ma-6cWTl6mhkrLnAVJ7RNzlQRypQ5", os.path.join(data_path, "lpd_5_cleansed.tar.gz"))
-    gdown.download("https://drive.google.com/uc?id=1hp9b_g1hu_dkP4u8h46iqHeWMaUoI07R", os.path.join(data_path, "id_lists_amg.tar.gz"))
-    gdown.download("https://drive.google.com/uc?id=1mpsoxU2fU1AjKopkcQ8Q8V6wYmVPbnPO", os.path.join(data_path, "id_lists_lastfm.tar.gz"))
+    gdown.download("https://drive.google.com/uc?id=1yz0Ma-6cWTl6mhkrLnAVJ7RNzlQRypQ5", os.path.join(data_path, "lpd_5_cleansed.tar.gz"), quiet=False)
+    gdown.download("https://drive.google.com/uc?id=1hp9b_g1hu_dkP4u8h46iqHeWMaUoI07R", os.path.join(data_path, "id_lists_amg.tar.gz"), quiet=False)
+    gdown.download("https://drive.google.com/uc?id=1mpsoxU2fU1AjKopkcQ8Q8V6wYmVPbnPO", os.path.join(data_path, "id_lists_lastfm.tar.gz"), quiet=False)
     for tar_name in ["lpd_5_cleansed.tar.gz", "id_lists_amg.tar.gz", "id_lists_lastfm.tar.gz"]:
         tar = tarfile.open(os.path.join(data_path, tar_name))
         tar.extractall(data_path)
@@ -57,9 +57,9 @@ if __name__=="__main__":
     assert len(arguments) > 1, "No argument"
 
     data_path = arguments[1]
-    # assert not os.path.exists(data_path), "Data is already exists."
+    assert not os.path.exists(data_path), "Data is already exists."
 
-    # download_data(data_path)
+    download_data(data_path)
     id_list = get_id_list(data_path)
     dataset_root = os.path.join(data_path, "lpd_5", "lpd_5_cleansed")
 

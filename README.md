@@ -25,9 +25,9 @@ python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data
 
 `--latent_dim`: int, default = 128.
 
-`--n_steps`: int, default = 100000. 
+`--n_epochs`: int, default = 100. 
 
-`--sample_inteval`: int, default = 10000. chekpoint interval.
+`--ckpoint_inteval`: int, default = 10.
 
 `--lr`: float, default = 1e-5. learning rate.
 
