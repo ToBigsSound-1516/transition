@@ -56,9 +56,9 @@ python3 main.py --ckpoint ./your_checkpoint_path --midi_path1 ./first_midi_path 
 
 `--mix_margin`: int, default = 4 * measure_resolution. Mixed file will be saved with the margin.
 
-# Backend
+## Backend
 
-## How to run flask
+### How to run flask
 ```
 python3 app.py
 ```
