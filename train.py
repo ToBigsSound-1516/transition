@@ -27,8 +27,8 @@ def train(args, model, dataloader, cur_epoch = 1):
     loss_fn = torch.nn.MSELoss(reduction='sum')
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, betas=(0.5, 0.99))
-    pbar = tqdm(range(cur_epoch, args.n_epochs+1), desc="Training", unit = "epoch")
-    for epoch in pbar:
+    pbar = tqdm(initial= cur_epoch, total = args.n_epochs+1, desc="Training", unit = "epoch")
+    for epoch in range(cur_epoch, args.n_epochs+1):
         for idx, real_samples in enumerate(dataloader):
             loss, pred, real = train_one_step(args, model, optimizer, real_samples[0], loss_fn)
             pbar.set_postfix_str("loss: {:.3f}".format(loss))
@@ -40,6 +40,7 @@ def train(args, model, dataloader, cur_epoch = 1):
                 save_midi(os.path.join(args.ckpoint, "sample", "pred_epoch{:04d}.mid".format(epoch)), prediction)
                 target = real[0].detach().cpu()
                 save_midi(os.path.join(args.ckpoint, "sample", "target_epoch{:04d}.mid".format(epoch)), target)
+        pbar.update(1)
     pbar.close()
 
 def mix_arr(args, model, mid1, mid2, start1, start2, margin):
