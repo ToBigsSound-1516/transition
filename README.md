@@ -37,13 +37,13 @@ python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data
 
 `--n_epochs`: int, default = 100. 
 
-`--ckpoint_inteval`: int, default = 10.
+`--ckpoint_interval`: int, default = 10.
 
 `--save_sample`: Use this option to save some midi samples while training.
 
 ## Mixing
 ```
-python3 main.py --ckpoint ./your_checkpoint_path --midi_path1 ./first_midi_path --midi_path2 ./second_midi_path --start1 100 --start2 200 --midi_save_path ./mixed_midi_will_be_saved_here
+python3 main.py --ckpoint ./your_checkpoint_path --midi_path1 ./first_midi_path --midi_path2 ./second_midi_path --start1 100 --start2 200 --midi_save_dir ./mixed_midi_will_be_saved_here
 ```
 
 **Mixing Arguments**
@@ -55,3 +55,10 @@ python3 main.py --ckpoint ./your_checkpoint_path --midi_path1 ./first_midi_path 
 `--start1`, `--start2`: int. Mixed point.
 
 `--mix_margin`: int, default = 4 * measure_resolution. Mixed file will be saved with the margin.
+
+# Backend
+
+## How to run flask
+```
+python3 app.py
+```

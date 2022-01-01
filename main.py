@@ -81,6 +81,8 @@ if __name__ == "__main__":
         assert os.path.exists(args.midi_path1), "midi file 1 does not exist."
         assert os.path.exists(args.midi_path2), "midi file 2 does not exist."
         assert args.start1 is not None and args.start2 is not None, "Mixed point is not given."
-
-        os.makedirs(args.midi_save_dir, exist_ok=True)
+        if args.midi_save_dir.endswith(".mid"):
+            os.makedirs(os.path.dirname(args.midi_save_dir), exist_ok=True)
+        else:
+            os.makedirs(args.midi_save_dir, exist_ok=True)
         mix(args, model)
