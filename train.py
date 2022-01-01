@@ -34,12 +34,12 @@ def train(args, model, dataloader, cur_epoch = 1):
             pbar.set_postfix_str("loss: {:.3f}".format(loss))
 
         if epoch % args.ckpoint_interval == 0:
-            torch.save(model.state_dict(), os.path.join(args.ckpoint, "epoch{}.pt".format(epoch)))
+            torch.save(model.state_dict(), os.path.join(args.ckpoint, "epoch{:04d}.pt".format(epoch)))
             if args.save_sample:
                 prediction = pred[0].detach().cpu()
-                save_midi(os.path.join(args.ckpoint, "sample", "pred_epoch{}.mid".format(epoch)), prediction)
+                save_midi(os.path.join(args.ckpoint, "sample", "pred_epoch{:04d}.mid".format(epoch)), prediction)
                 target = real[0].detach().cpu()
-                save_midi(os.path.join(args.ckpoint, "sample", "target_epoch{}.mid".format(epoch)), target)
+                save_midi(os.path.join(args.ckpoint, "sample", "target_epoch{:04d}.mid".format(epoch)), target)
     pbar.close()
 
 def mix_arr(args, model, mid1, mid2, start1, start2, margin):
