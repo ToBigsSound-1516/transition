@@ -24,7 +24,7 @@ def train_one_step(args, model, optimizer, real_samples, loss_fn):
 
 def train(args, model, dataloader, cur_epoch = 1):
     model.train()
-    loss_fn = torch.nn.MSELoss(reduction='sum')
+    loss_fn = torch.nn.MSELoss(reduction='mean')
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, betas=(0.5, 0.99))
     pbar = tqdm(initial= cur_epoch, total = args.n_epochs+1, desc="Training", unit = "epoch")
