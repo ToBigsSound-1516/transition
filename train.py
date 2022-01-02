@@ -32,11 +32,12 @@ def train(args, model, dataloader, cur_epoch = 1):
     for epoch in range(cur_epoch, args.n_epochs+1):
         for idx, real_samples in enumerate(dataloader):
             loss, pred, real = train_one_step(args, model, optimizer, real_samples[0], loss_fn)
-            log_name = os.path.join(args.ckpoint, 'loss_log.txt')
-            with open(log_name, "a") as log_file:
-                now = time.strftime("%c")
-                log_file.write("{}\tepoch: {:03d}\tloss: {:.3f}".format(now, epoch, loss/args.batch_size))
             pbar.set_postfix_str("loss: {:.3f}".format(loss/args.batch_size))
+
+        log_name = os.path.join(args.ckpoint, 'loss_log.txt')
+        with open(log_name, "a") as log_file:
+            now = time.strftime("%c")
+            log_file.write("{}\tepoch: {:03d}\tloss: {:.3f}\n".format(now, epoch, loss / args.batch_size))
 
         if epoch % args.ckpoint_interval == 0:
             torch.save(model.state_dict(), os.path.join(args.ckpoint, "epoch{:04d}.pt".format(epoch)))
