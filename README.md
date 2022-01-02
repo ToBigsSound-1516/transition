@@ -62,3 +62,4 @@ python3 main.py --ckpoint ./your_checkpoint_path --midi_path1 ./first_midi_path 
 ```
 python3 app.py
 ```
+You can get some sample result [HERE](http://101.101.217.27:1516/dj).
