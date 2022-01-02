@@ -24,14 +24,14 @@ def train_one_step(args, model, optimizer, real_samples, loss_fn):
 
 def train(args, model, dataloader, cur_epoch = 1):
     model.train()
-    loss_fn = torch.nn.MSELoss(reduction='mean')
+    loss_fn = torch.nn.MSELoss(reduction='sum')
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, betas=(0.5, 0.99))
     pbar = tqdm(initial= cur_epoch, total = args.n_epochs+1, desc="Training", unit = "epoch")
     for epoch in range(cur_epoch, args.n_epochs+1):
         for idx, real_samples in enumerate(dataloader):
             loss, pred, real = train_one_step(args, model, optimizer, real_samples[0], loss_fn)
-            pbar.set_postfix_str("loss: {:.3f}".format(loss))
+            pbar.set_postfix_str("loss: {:.3f}".format(loss/args.batch_size))
 
         if epoch % args.ckpoint_interval == 0:
             torch.save(model.state_dict(), os.path.join(args.ckpoint, "epoch{:04d}.pt".format(epoch)))
