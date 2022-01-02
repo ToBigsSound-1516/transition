@@ -1,3 +1,6 @@
+pip
+wheel
+setuptools
 argparse
 torch
 Flask
