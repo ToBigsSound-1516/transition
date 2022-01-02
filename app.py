@@ -1,4 +1,5 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, send_file
+from flask_cors import CORS
 import os
 from time import time
 
@@ -7,6 +8,7 @@ from train import mix
 import torch
 
 app = Flask(__name__)
+CORS(app)
 
 class Args:
     def __init__(self, midi_path1, midi_path2, start1, start2, midi_save_dir):
@@ -28,7 +30,7 @@ def dj():
     req = request.get_json()
     if req is None or len(req)== 0:
         args = Args("./test_mid/DontLookBackinAnger.mid", "./test_mid/ThinkOutLoud.mid",
-                    100, 200,
+                    16*16, 64*16,
                     "./result/result.mid")
     else:
         # TODO
@@ -44,7 +46,7 @@ def dj():
 
     # TODO
     if os.path.exists(args.midi_save_dir):
-        return "True\t{:.2f}sec".format(duration)
+        return send_file(args.midi_save_dir)
     else:
         return "Error"
 
@@ -56,6 +58,6 @@ if __name__ == "__main__":
     # TODO
     model.load_state_dict(torch.load("model.pt", map_location = device))
 
-    app.run()
+    app.run(host="0.0.0.0", port=1516)
 
 
