@@ -1,4 +1,4 @@
-# Transition (가제)
+# Transition (ê°€ì œ)
 ## Prerequisites
 ### Set up
 ```
@@ -9,11 +9,12 @@ pip install -r requirements.txt
 
 ### Download Lakh Pianoroll Dataset
 ```
-python3 prepare_data.py ./your_data_path
+python3 prepare_data.py ./your_data_path -1
 ```
+The last option means the number of pools. Use 0 to turn off multi-processing option. Use -1 to set the pools automatically.
 ## Training
 ```
-python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data_path --n_steps 100000
+python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data_path --n_epochs 100000
 ```
 
 **Base Arguments**
@@ -31,13 +32,13 @@ python3 main.py --train --ckpoint ./your_checkpoint_path --data_path ./your_data
 
 `--data_path`: str, default = "./data". There must be a `data.npy` in your data_path. Please refer the `prepare_data.py`.
 
-`--lr`: float, default = 1e-5. learning rate.
+`--lr`: float, default = 0.0001. learning rate.
 
-`--batch_size`: int, default = 128.
+`--batch_size`: int, default = 8192.
 
-`--n_epochs`: int, default = 100. 
+`--n_epochs`: int, default = 1000. 
 
-`--ckpoint_interval`: int, default = 10.
+`--ckpoint_interval`: int, default = 100.
 
 `--save_sample`: Use this option to save some midi samples while training.
 

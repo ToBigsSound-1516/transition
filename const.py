@@ -7,7 +7,7 @@ np.random.seed(42)
 n_tracks = 5  # number of tracks
 n_pitches = 72  # number of pitches
 lowest_pitch = 24  # MIDI note number of the lowest pitch
-n_samples_per_song = 8  # number of samples to extract from each song in the datset
+n_samples_per_song = 10  # number of samples to extract from each song in the datset
 n_measures = 4  # number of measures per sample
 beat_resolution = 4  # temporal resolution of a beat (in timestep)
 

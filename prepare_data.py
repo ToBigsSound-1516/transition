@@ -4,6 +4,7 @@ import tarfile
 import sys
 import parmap
 from functools import reduce
+from tqdm import tqdm
 
 from const import *
 from util import midi_to_array
@@ -49,7 +50,10 @@ def id2sample(id_list, dataset_root):
         for idx in np.random.choice(candidate, target_n_samples, False):
             start = idx * measure_resolution
             end = (idx + n_measures) * measure_resolution
-            data.append(song_arr[:,start:end,:])
+            sample = song_arr[:,start:end,:]
+            if (sample.sum() < 10):
+                continue
+            data.append(sample)
     return data
 
 if __name__=="__main__":
@@ -57,20 +61,35 @@ if __name__=="__main__":
     assert len(arguments) > 1, "No argument"
 
     data_path = arguments[1]
-    assert not os.path.exists(data_path), "Data is already exists."
+    assert not os.path.exists(os.path.join(data_path, "data.npy")), "data.npy is already exists."
+    
+    num_cores = -1
+    if len(arguments) >=2:
+        num_cores = int(arguments[2])
+    
+    if not os.path.exists(os.path.join(data_path, "amg")) or not os.path.exists(os.path.join(data_path, "lastfm")) or not os.path.exists(os.path.join(data_path, "lpd_5")): 
+        download_data(data_path)
+    else:
+        print("Skip downloading...")
 
-    download_data(data_path)
     id_list = get_id_list(data_path)
     dataset_root = os.path.join(data_path, "lpd_5", "lpd_5_cleansed")
 
     print("Trying to sample {} per song.".format(n_samples_per_song))
-    num_cores = os.cpu_count()
-    print("# of cores: {}".format(num_cores))
-    splited_data = [x.tolist() for x in np.array_split(id_list, num_cores)]
-    result = parmap.map(id2sample, splited_data, dataset_root, pm_pbar=True, pm_processes=num_cores)
-    data = list(reduce(lambda x, y: x + y, result))
-
+    if num_cores == 0:
+        print("Multi-processing off.")
+        data = id2sample(tqdm(id_list), dataset_root)
+    else:
+        if num_cores == -1:
+            num_cores = os.cpu_count()
+        print("# of cores: {}".format(num_cores))
+        splited_data = [x.tolist() for x in np.array_split(id_list, num_cores)]
+        result = parmap.map(id2sample, splited_data, dataset_root, pm_pbar=True, pm_processes=num_cores)
+        data = list(reduce(lambda x, y: x + y, result))
+    
+    print("Shuffling data...")
     random.shuffle(data)
+
     data = np.stack(data)
     print(f"Successfully collect {len(data)} samples from {len(id_list)} songs")
     print(f"Data shape : {data.shape}")

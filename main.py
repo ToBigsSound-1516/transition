@@ -18,9 +18,9 @@ if __name__ == "__main__":
     parser.add_argument('--train', action='store_true', help='enables training')
     parser.add_argument('--data_path', type=str, default = "./data")
     parser.add_argument('--lr', type=float, default = 0.0001)
-    parser.add_argument('--batch_size', type=int, default = 128)
-    parser.add_argument('--n_epochs', type=int, default=100)
-    parser.add_argument('--ckpoint_interval', type=int, default=10)
+    parser.add_argument('--batch_size', type=int, default = 8192)
+    parser.add_argument('--n_epochs', type=int, default=1000)
+    parser.add_argument('--ckpoint_interval', type=int, default=100)
     parser.add_argument('--save_sample', action='store_true', help="save some midi samples")
 
     # Mixing parameter
@@ -60,7 +60,8 @@ if __name__ == "__main__":
     else:
         assert args.train, "There is no model in "+args.ckpoint
 
-    model = model.to(args.device)
+    if not args.cpu and torch.cuda.is_available():
+        model.cuda()
 
     print("=" * 80)
     if args.train:

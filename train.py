@@ -6,34 +6,34 @@ import time
 
 from util import save_midi, midi_to_array
 
-def train_one_step(args, model, optimizer, scheduler, real_samples, loss_fn):
-    input = torch.cat([real_samples[:,:,:16,:], real_samples[:,:,-16:,:]], dim = 2)
+def train_one_step(args, model, optimizer, real_samples, loss_fn):
+    inputs = torch.cat([real_samples[:,:,:16,:], real_samples[:,:,-16:,:]], dim = 2).clone().detach()
 
-
-    real_samples = real_samples.to(args.device)
-    input = input.to(args.device)
+    if not args.cpu and torch.cuda.is_available():
+        real_samples = real_samples.cuda()
+        inputs = inputs.cuda()
 
     optimizer.zero_grad()
 
-    pred = model(input)
-    loss = loss_fn(pred, real_samples)
+    pred = model(inputs)
+    loss = loss_fn(pred, real_samples) / real_samples.shape[0]
 
     loss.backward()
     optimizer.step()
-    scheduler.step()
+    # scheduler.step()
 
-    return loss, pred, real_samples
+    return loss.item(), pred.detach().cpu(), real_samples.detach().cpu()
 
 def train(args, model, dataloader, cur_epoch = 1):
-    loss_fn = torch.nn.MSELoss(reduction='sum')
+    loss_fn = torch.nn.MSELoss(reduction = "sum")
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, betas=(0.5, 0.99))
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
+    # scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
     pbar = tqdm(initial= cur_epoch, total = args.n_epochs, desc="Training", unit = "epoch")
     for epoch in range(cur_epoch, args.n_epochs+1):
         for idx, real_samples in enumerate(dataloader):
             model.train()
-            loss, pred, real = train_one_step(args, model, optimizer, scheduler, real_samples[0], loss_fn)
+            loss, pred, real = train_one_step(args, model, optimizer, real_samples[0], loss_fn)
             pbar.set_postfix_str("loss: {:.3f}".format(loss))
 
         log_name = os.path.join(args.ckpoint, 'loss_log.txt')
