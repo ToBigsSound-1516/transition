@@ -25,21 +25,21 @@ def train_one_step(args, model, optimizer, scheduler, real_samples, loss_fn):
     return loss, pred, real_samples
 
 def train(args, model, dataloader, cur_epoch = 1):
-    model.train()
     loss_fn = torch.nn.MSELoss(reduction='sum')
     optimizer = torch.optim.Adam(
         model.parameters(), lr=args.lr, betas=(0.5, 0.99))
-    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.9)
-    pbar = tqdm(initial= cur_epoch, total = args.n_epochs+1, desc="Training", unit = "epoch")
+    scheduler = torch.optim.lr_scheduler.ExponentialLR(optimizer, gamma=0.5)
+    pbar = tqdm(initial= cur_epoch, total = args.n_epochs, desc="Training", unit = "epoch")
     for epoch in range(cur_epoch, args.n_epochs+1):
         for idx, real_samples in enumerate(dataloader):
+            model.train()
             loss, pred, real = train_one_step(args, model, optimizer, scheduler, real_samples[0], loss_fn)
-            pbar.set_postfix_str("loss: {:.3f}".format(loss/args.batch_size))
+            pbar.set_postfix_str("loss: {:.3f}".format(loss))
 
         log_name = os.path.join(args.ckpoint, 'loss_log.txt')
         with open(log_name, "a") as log_file:
             now = time.strftime("%c")
-            log_file.write("[{}]\tepoch: {:04d}\tloss: {:.3f}\n".format(now, epoch, loss / args.batch_size))
+            log_file.write("[{}]\tepoch: {:04d}\tloss: {:.3f}\n".format(now, epoch, loss))
 
         if epoch % args.ckpoint_interval == 0:
             torch.save(model.state_dict(), os.path.join(args.ckpoint, "epoch{:04d}.pt".format(epoch)))

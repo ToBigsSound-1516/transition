@@ -17,7 +17,7 @@ if __name__ == "__main__":
     # Training parameter
     parser.add_argument('--train', action='store_true', help='enables training')
     parser.add_argument('--data_path', type=str, default = "./data")
-    parser.add_argument('--lr', type=float, default = 1e-5)
+    parser.add_argument('--lr', type=float, default = 0.0001)
     parser.add_argument('--batch_size', type=int, default = 128)
     parser.add_argument('--n_epochs', type=int, default=100)
     parser.add_argument('--ckpoint_interval', type=int, default=10)
