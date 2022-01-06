@@ -28,6 +28,7 @@ def hello():
 @app.route("/dj", methods=["GET",'POST'])
 def dj():
     req = request.get_json()
+    print(req)
     if req is None or len(req)== 0:
         args = Args("./test_mid/DontLookBackinAnger.mid", "./test_mid/ThinkOutLoud.mid",
                     16*16, 64*16,
@@ -36,13 +37,13 @@ def dj():
         # TODO
         args = Args(os.path.join("./test_mid", req["midi1"]), os.path.join("./test_mid", req["midi2"]),
                     int(req["start1"]), int(req["start2"]),
-                    os.path.join("./result", req["username"]))
+                    os.path.join("./result/{}.mid".format(req["username"])))
     try:
         start = time()
         mix(args, model)
         duration = time() - start
     except:
-        return "Error"
+        return "Generation Error"
 
     # TODO
     if os.path.exists(args.midi_save_dir):
