@@ -14,6 +14,7 @@ beat_resolution = 4  # temporal resolution of a beat (in timestep)
 programs = [0, 0, 25, 33, 48]  # program number for each track
 is_drums = [True, False, False, False, False]  # drum indicator for each track
 track_names = ['Drums', 'Piano', 'Guitar', 'Bass', 'Strings']  # name of each track
+track_names_lower = [track.lower() for track in track_names]
 
 measure_resolution = 4 * beat_resolution 
 tempo = 100

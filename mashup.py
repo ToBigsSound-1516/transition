@@ -232,7 +232,7 @@ def js_similarity_matrix(midi1:np.ndarray,midi2:np.ndarray, dist_func:object = d
     return dist_mx
 
 
-def get_dtw_similarity(path1:str,path2:str) ->tuple :
+def get_dtw_similarity(path1:str, path2:str) ->tuple:
     """
     pypianoroll 형식으로 불러온 midi 파일의 유사도를 구하기 위한 함수입니다.
     Dynamic Time warping을 이용하여 두개의 midi 파일의 마디에 대한 유사도를 구하여 후보 index를 출력합니다.
@@ -267,6 +267,8 @@ def get_dtw_similarity(path1:str,path2:str) ->tuple :
 
     for track in range(5) :
         for i,j in np.squeeze(np.dstack(np.unravel_index(np.argsort(similarity[:,:,track].ravel()), (len(tr_song1), len(tr_song2)))),axis = 0) :
+            if i==0 or j==0 or i == len(tr_song1)-1 or j== len(tr_song2)-1:
+                continue
             if (i,j) not in candidate_dict :
                 candidate_dict[(i,j)] = 0    
             if similarity[i,j,track] == np.inf :
@@ -277,9 +279,9 @@ def get_dtw_similarity(path1:str,path2:str) ->tuple :
     candidate_dict = dict([(idx,np.inf) if v == 0 else (idx,v) for idx,v in candidate_dict.items()])
     candidate_dict = sorted([items for items in candidate_dict.items()], key=lambda x: x[1])
 
-    return candidate_dict[:10]
+    return candidate_dict
 
-def get_distribution_similarity(path1:str,path2:str) ->tuple :
+def get_distribution_similarity(path1:str, path2:str) ->tuple :
 
     """
     pypianoroll 형식으로 불러온 midi 파일의 유사도를 구하기 위한 함수입니다.
@@ -306,8 +308,8 @@ def get_distribution_similarity(path1:str,path2:str) ->tuple :
 
     for track in range(5) :
         for i,j in np.squeeze(np.dstack(np.unravel_index(np.argsort(similarity[:,:,track].ravel()), (len(tr_song1), len(tr_song2)))),axis = 0)[::-1] :
-            #if i==0 or j == 0 or i == len(tr_song1)-1 or j == len(tr_song2)-1:
-                #continue
+            if i==0 or j == 0 or i == len(tr_song1)-1 or j == len(tr_song2)-1:
+                continue
             if (i,j) not in candidate_dict :
                 candidate_dict[(i,j)] = 0    
             if similarity[i,j,track] == 0 :
@@ -315,5 +317,5 @@ def get_distribution_similarity(path1:str,path2:str) ->tuple :
             else :
                 candidate_dict[(i,j)] += similarity[i,j,track]/5
     candidate_dict = sorted([items for items in candidate_dict.items()], key=lambda x: -x[1])
-    return candidate_dict[:10]
+    return candidate_dict
 

@@ -1,4 +1,4 @@
-from flask import Flask, request, send_file
+from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 import os
 from time import time
@@ -38,6 +38,8 @@ def dj():
                     "./result/result.mid")
     else:
         # TODO
+        if "username" not in req.keys():
+            req["username"] = "temp"
         args = Args(os.path.join("./test_mid", req["midi1"]), os.path.join("./test_mid", req["midi2"]),
                     int(req["start1"]), int(req["start2"]),
                     os.path.join("./result/{}.mid".format(req["username"])))
@@ -55,20 +57,41 @@ def dj():
         return "Error"
 
 @app.route("/mashup", methods=["GET", "POST"])
-def mashup():
+def recommend():
     req = request.get_json()
     print(req)
+    
     if req is None or len(req)==0:
         return "No Argument Error"
+    
     midi1, midi2, mode = os.path.join("./test_mid", req["midi1"]), os.path.join("./test_mid", req["midi2"]), req["mode"]
+    
     if not os.path.exists(midi1) or not os.path.exists(midi2):
         return "No Midi File Error"
+    
     if mode not in similar_dict.keys():
         return "No mode error"
-    candidate = similar_dict[mode](midi1, midi2)
+    
+    if "n_rank" not in req:
+        req["n_rank"] = 1
+    else:
+        req["n_rank"] = int(req["n_rank"])
+
+    if req["n_rank"] < 1 or req["n_rank"] > 100:
+        req["n_rank"] = 1
+    
+    candidate = similar_dict[mode](midi1, midi2)[:req["n_rank"]]
     print(candidate)
-    candidate = candidate[0]
-    return "start1: {} start2: {} score: {:.4f}".format(candidate[0][0], candidate[0][1], candidate[1])
+    
+   # return "start1: {} start2: {} score: {:.4f}".format(candidate[0][0]*16, candidate[0][1]*16, candidate[1])
+    return list_to_json(candidate)
+
+def list_to_json(candidates):
+    response = []
+    for idx, row in enumerate(candidates):
+        start1, start2, score = int(row[0][0]), int(row[0][1]), float(row[1])
+        response.append({"start1": start1, "start2": start2, "score": score})
+    return jsonify(response)
 
 if __name__ == "__main__":
     model = Model(128)
