@@ -27,11 +27,17 @@ class Args:
 def hello():
     return "Flask is Running!"
 
+def get_request(request):
+    if request.method == "POST":
+        return request.get_json()
+    if request.method == "GET":
+        return request.args.to_dict()
 
 @app.route("/dj", methods=["GET",'POST'])
 def dj():
-    req = request.get_json()
-    print(req)
+    req = get_request(request)
+    app.logger.info("Request from /dj: "+str(req))
+
     if req is None or len(req)== 0:
         args = Args("./test_mid/DontLookBackinAnger.mid", "./test_mid/ThinkOutLoud.mid",
                     16*16, 64*16,
@@ -43,33 +49,37 @@ def dj():
         args = Args(os.path.join("./test_mid", req["midi1"]), os.path.join("./test_mid", req["midi2"]),
                     int(req["start1"]), int(req["start2"]),
                     os.path.join("./result/{}.mid".format(req["username"])))
-    try:
-        start = time()
-        mix(args, model)
-        duration = time() - start
-    except:
-        return "Generation Error"
+    #try:
+        #start = time()
+    mix(args, model)
+        #duration = time() - start
+    #except:
+        #return "Generation Error"
 
     # TODO
     if os.path.exists(args.midi_save_dir):
         return send_file(args.midi_save_dir)
     else:
+        app.logger.error("Generated file does not exist.")
         return "Error"
 
 @app.route("/mashup", methods=["GET", "POST"])
 def recommend():
-    req = request.get_json()
-    print(req)
+    req = get_request(request)
+    app.logger.info("Request from /mashup: "+str(req))
     
     if req is None or len(req)==0:
+        app.logger.error("No Argument Error")
         return "No Argument Error"
     
     midi1, midi2, mode = os.path.join("./test_mid", req["midi1"]), os.path.join("./test_mid", req["midi2"]), req["mode"]
     
     if not os.path.exists(midi1) or not os.path.exists(midi2):
+        app.logger.error("No Midi File Error")
         return "No Midi File Error"
     
     if mode not in similar_dict.keys():
+        app.logger.error("No mode error")
         return "No mode error"
     
     if "n_rank" not in req:
@@ -81,7 +91,7 @@ def recommend():
         req["n_rank"] = 1
     
     candidate = similar_dict[mode](midi1, midi2)[:req["n_rank"]]
-    print(candidate)
+    app.logger.info("Total {} candidates will be returned".format(len(candidate)))
     
    # return "start1: {} start2: {} score: {:.4f}".format(candidate[0][0]*16, candidate[0][1]*16, candidate[1])
     return list_to_json(candidate)
@@ -100,6 +110,6 @@ if __name__ == "__main__":
     # TODO
     model.load_state_dict(torch.load("model.pt", map_location = device))
 
-    app.run(host="0.0.0.0", port=1516)
+    app.run(host="0.0.0.0", port=1516, debug = True)
 
 
