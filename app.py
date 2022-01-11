@@ -2,6 +2,7 @@ from flask import Flask, request, send_file, jsonify
 from flask_cors import CORS
 import os
 from time import time
+import ssl
 
 from model import Model
 from train import mix
@@ -100,7 +101,7 @@ def list_to_json(candidates):
     response = []
     for idx, row in enumerate(candidates):
         start1, start2, score = int(row[0][0]), int(row[0][1]), float(row[1])
-        response.append({"start1": start1, "start2": start2, "score": score})
+        response.append({"start1": start1*16, "start2": start2*16, "score": score})
     return jsonify(response)
 
 if __name__ == "__main__":
@@ -109,7 +110,8 @@ if __name__ == "__main__":
 
     # TODO
     model.load_state_dict(torch.load("model.pt", map_location = device))
-
-    app.run(host="0.0.0.0", port=1516, debug = True)
+    ssl_context = ssl.SSLContext(ssl.PROTOCOL_TLS)
+    ssl_context.load_cert_chain(certfile="/etc/ssl/certificate.crt", keyfile="/etc/ssl/private/private.key")
+    app.run(host="0.0.0.0", port=1516, debug = True, ssl_context = ssl_context)
 
 
